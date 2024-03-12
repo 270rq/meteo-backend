@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum WindType {
+  N
+  NE
+  E
+  SE
+  SW
+  S
+  W
+  NW
+}
+
+enum WeatherType {
+  Sunny
+  Cloudy
+  Rain
+  Snow
+  Fog
+  Windy
+  Storm
+}
+
+enum UserRoles {
+  superAdmin
+  admin
+  user
+}
+
+
+
+model Region {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  city City[]
+}
+
+model City {
+  id       Int    @id @default(autoincrement())
+  name     String
+  region   Region @relation(fields: [regionId], references: [id])
+  regionId Int
+
+  sun  Sun[]
+  menu Menu[]
+}
+
+model Sun {
+  id      Int      @id @default(autoincrement())
+  date    DateTime @db.Date()
+  city    City     @relation(fields: [cityId], references: [id])
+  cityId  Int
+  sunset  DateTime @db.Time()
+  sunrise DateTime @db.Time()
+}
+
+model Family {
+  id     Int      @id @default(autoincrement())
+  name   String   @unique
+  flower Flower[]
+}
+
+model Flower {
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  family   Family @relation(fields: [familyId], references: [id])
+  familyId Int
+
+  map  Map[]
+  user User[]
+}
+
+model Menu {
+  id          Int         @id @default(autoincrement())
+  date        DateTime
+  city        City        @relation(fields: [cityId], references: [id])
+  cityId      Int
+  temperature Int
+  humidity    Int
+  uv          Int
+  windSpeed   Int
+  windType    WindType
+  pressure    Int
+  weatherType WeatherType
+}
+
+model Map {
+  id       Int      @id @default(autoincrement())
+  day      DateTime
+  flower   Flower   @relation(fields: [flowerId], references: [id])
+  flowerId Int
+  x        Float
+  y        Float
+  lvl      Int
+}
+
+model User {
+  id           Int    @id @default(autoincrement())
+  email        String @unique
+  hashPassword String
+  flower       Flower @relation(fields: [flowerId], references: [id])
+  flowerId     Int
+  role UserRoles
+}
