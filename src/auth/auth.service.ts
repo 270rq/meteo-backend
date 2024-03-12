@@ -2,7 +2,7 @@ import {
   ConflictException,
   Injectable,
   UnauthorizedException,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 
 import { UserService } from 'src/user/user.service';
@@ -21,26 +21,26 @@ export class AuthService {
   async signIn(
     mail: string,
     enteredPassword: string,
-): Promise<{ access_token: string }> {
+  ): Promise<{ access_token: string }> {
     const user = await this.usersService.findOneByEmail(mail);
     if (!user) {
-        throw new NotFoundException('User not found');
+      throw new NotFoundException('User not found');
     }
-    
+
     const isMatch = await bcrypt.compare(enteredPassword, user.hashPassword);
     if (!isMatch) {
-        throw new UnauthorizedException('Invalid password');
+      throw new UnauthorizedException('Invalid password');
     }
-    
+
     const payload = {
-        sub: user.id,
-        email: user.email,
+      sub: user.id,
+      email: user.email,
     };
-    
+
     return {
-        access_token: await this.jwtService.signAsync(payload),
+      access_token: await this.jwtService.signAsync(payload),
     };
-}
+  }
   async signUp(signUpData: ISignUp) {
     const user = await this.usersService.findOneByEmail(signUpData.email);
     if (user) {
@@ -58,5 +58,59 @@ export class AuthService {
     return {
       access_token: await this.jwtService.signAsync(payload),
     };
-}
+  }
+
+  async createSuperAdmin(signUpData: ISignUp, developerPassword: string) {
+    const developerPasswordHash = await bcrypt.hash(
+      'superSecureDeveloperPassword',
+      config.HashSaltRound,
+    );
+    const validDeveloperPassword = await bcrypt.compare(
+      developerPassword,
+      developerPasswordHash,
+    );
+
+    if (!validDeveloperPassword) {
+      throw new UnauthorizedException('Invalid developer password');
+    }
+
+    const existingSuperAdmin = await this.usersService.findSuperAdmin();
+    if (existingSuperAdmin) {
+      throw new ConflictException('Super admin already exists');
+    }
+
+    const hash = await bcrypt.hash(signUpData.password, config.HashSaltRound);
+    signUpData.password = hash;
+
+    const createdSuperAdmin = await this.usersService.createUser(signUpData);
+
+    const payload = {
+      sub: createdSuperAdmin.id,
+      email: createdSuperAdmin.email,
+    };
+
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };
+  }
+
+  async createAdmin(signUpData: ISignUp) {
+    if (signUpData.role !== 'SuperAdmin') {
+      throw new UnauthorizedException('Only super admins can create admins');
+    }
+
+    const hash = await bcrypt.hash(signUpData.password, config.HashSaltRound);
+    signUpData.password = hash;
+
+    const createdAdmin = await this.usersService.createUser(signUpData);
+
+    const payload = {
+      sub: createdAdmin.id,
+      email: createdAdmin.email,
+    };
+
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };
+  }
 }
