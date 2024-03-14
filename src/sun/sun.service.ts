@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/service/prisma/prisma.service';
 import { ISun } from './interface/sun.interface';
 
@@ -8,7 +8,13 @@ export class SunService {
 
   async createSun(data: ISun) {
     return this.prisma.sun.create({
-      data,
+      data: {
+        date: data.date,
+        cityId: data.cityId,
+        sunset: data.sunset,
+        sunrise: data.sunrise,
+        createrUserId: data.createrUser,
+      },
     });
   }
 
@@ -22,17 +28,44 @@ export class SunService {
     });
   }
 
-  async updateSun(id: number, data: ISun) {
+  async updateSunForSuperAdmin(id: number, data: ISun) {
     return this.prisma.sun.update({
       where: { id },
       data,
     });
   }
 
-  async removeSun(id: number) {
+  async removeSunForSuperAdmin(id: number) {
     return this.prisma.menu.delete({
       where: { id },
     });
+  }
+
+  async updateSunForAdmin(id: number, data: ISun) {
+    if (this.isUsersSun(data.createrUser, id)) {
+      return this.prisma.sun.update({
+        where: { id },
+        data,
+      });
+    }
+    throw new ForbiddenException('You are not allowed to perform this action');
+  }
+
+  async removeSunForAdmin(id: number, userId: number) {
+    if (this.isUsersSun(userId, id)) {
+      return this.prisma.menu.delete({
+        where: { id },
+      });
+    }
+    throw new ForbiddenException(`You are not allowed to perform this action`);
+  }
+
+  async isUsersSun(userId: number, sunId: number): Promise<boolean> {
+    const sun = await this.prisma.sun.findUnique({
+      where: { id: sunId },
+      select: { createrUserId: true },
+    });
+    return sun.createrUserId === userId;
   }
 
   async getPage(page: number, limit: number) {

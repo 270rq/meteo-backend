@@ -20,21 +20,24 @@ export class AuthService {
   async signIn(
     mail: string,
     hashPassword: string,
-  ): Promise<{ access_token: string }> {
+  ): Promise<{ id: number; access_token: string }> {
+    console.log(hashPassword);
     const user = await this.usersService.findOneByEmail(mail);
     console.log(user);
-    const isMatch = await bcrypt.compare(user?.hashPassword, hashPassword);
-    if (isMatch) {
+    const isMatch = await bcrypt.compare(user.hashPassword, hashPassword);
+    if (!isMatch) {
       throw new UnauthorizedException();
     }
     const payload = {
-      sub: user.id,
       email: user.email,
+      id: user.id,
     };
     return {
+      id: user.id,
       access_token: await this.jwtService.signAsync(payload),
     };
   }
+
   async signUp(signUpData: ISignUp) {
     const user = await this.usersService.findOneByEmail(signUpData.email);
     if (user) {
@@ -46,10 +49,11 @@ export class AuthService {
     console.log(createdUser);
     console.log(signUpData);
     const payload = {
-      sub: createdUser.id,
       email: createdUser.email,
+      id: createdUser.id,
     };
     return {
+      id: createdUser.id,
       access_token: await this.jwtService.signAsync(payload),
     };
   }

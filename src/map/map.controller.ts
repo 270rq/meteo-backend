@@ -21,10 +21,9 @@ export class MapController {
     return this.mapService.getById(id);
   }
 
-  @Post('getAll')
-  async getAll(@Body() data: MapDto) {
-    console.log(data);
-    return this.mapService.getAll(data);
+  @Get('getAll')
+  async getAll() {
+    return this.mapService.getAll();
   }
 
   @Post()

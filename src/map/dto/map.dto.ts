@@ -27,4 +27,8 @@ export class MapDto implements IMap {
   @Min(1)
   @Max(100)
   lvl: number;
+
+  @ApiProperty()
+  @IsNumber()
+  createrUserId: number;
 }

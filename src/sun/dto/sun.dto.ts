@@ -19,4 +19,8 @@ export class SunDto implements ISun {
   @ApiProperty()
   @IsDate()
   sunrise: Date;
+
+  @ApiProperty()
+  @IsNumber()
+  createrUser: number;
 }

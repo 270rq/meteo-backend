@@ -66,6 +66,8 @@ model Sun {
   cityId  Int
   sunset  DateTime @db.Time()
   sunrise DateTime @db.Time()
+  creater User     @relation(fields: [createrUserId], references: [id])
+  createrUserId Int
 }
 
 model Family {
@@ -96,6 +98,8 @@ model Menu {
   windType    WindType
   pressure    Int
   weatherType WeatherType
+  creater User     @relation(fields: [createrUserId], references: [id])
+  createrUserId Int
 }
 
 model Map {
@@ -106,6 +110,8 @@ model Map {
   x        Float
   y        Float
   lvl      Int
+  creater User     @relation(fields: [createrUserId], references: [id])
+  createrUserId Int
 }
 
 model User {
@@ -115,4 +121,8 @@ model User {
   flower       Flower @relation(fields: [flowerId], references: [id])
   flowerId     Int
   role UserRoles
+
+  sun Sun[] 
+  menu Menu[]
+  map Map[]
 }

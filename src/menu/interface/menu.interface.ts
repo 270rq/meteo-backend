@@ -11,4 +11,5 @@ export interface IMenu {
   windType: TWindType;
   pressure: number;
   weatherType: TWeatherType;
+  createrUserId: number;
 }

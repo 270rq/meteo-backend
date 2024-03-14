@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/service/prisma/prisma.service';
 import { IUser } from './interface/create-user.interface';
 import { ISignUp } from 'src/auth/interface/signUp';
 import { UserRoles } from 'src/enum/user-role';
+import * as bcrypt from 'bcrypt';
+import { config } from 'config/config';
 
 @Injectable()
 export class UserService {
@@ -19,10 +21,17 @@ export class UserService {
     });
   }
   async createAdmin(user: ISignUp) {
+    const userDb = await this.findOneByEmail(user.email);
+    if (userDb) {
+      throw new ConflictException('User already exists');
+    }
+    console.log(user);
+    const hash = await bcrypt.hash(user.password, Number(config.HashSaltRound));
+    user.password = hash;
     return this.prisma.user.create({
       data: {
         email: user.email,
-        hashPassword: user.password,
+        hashPassword: hash,
         flowerId: user.flowerId,
         role: UserRoles.admin,
       },

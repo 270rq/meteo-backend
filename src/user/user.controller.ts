@@ -2,8 +2,6 @@ import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
 import { IUser } from './interface/create-user.interface';
-import { UserRoles } from 'src/enum/user-role';
-import { Roles } from 'decorators/roles-key';
 import { SignUpDto } from 'src/auth/dto/signUp';
 
 @Controller('user')
@@ -11,14 +9,9 @@ import { SignUpDto } from 'src/auth/dto/signUp';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Roles(UserRoles.superAdmin)
-  @Post()
+  @Post('createAdmin')
   async createAdmin(@Body() user: SignUpDto) {
     return this.userService.createAdmin(user);
-  }
-  @Post()
-  async createUser(@Body() user: SignUpDto) {
-    return this.userService.createUser(user);
   }
 
   @Get()

@@ -13,7 +13,7 @@ export class MapService {
     });
   }
 
-  async getAll(data: IMap) {
+  async getAll() {
     return this.prisma.map.findMany();
   }
 

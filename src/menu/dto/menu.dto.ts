@@ -39,4 +39,8 @@ export class MenuDto implements IMenu {
   @ApiProperty()
   @IsIn(['Sunny', 'Cloudy', 'Rain', 'Snow', 'Fog', 'Windy', 'Storm'])
   weatherType: 'Sunny' | 'Cloudy' | 'Rain' | 'Snow' | 'Fog' | 'Windy' | 'Storm';
+
+  @ApiProperty()
+  @IsNumber()
+  createrUserId: number;
 }
