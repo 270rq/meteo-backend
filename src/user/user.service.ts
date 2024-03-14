@@ -38,6 +38,14 @@ export class UserService {
     });
   }
 
+  async findSuperAdmin() {
+    const superAdmin = await this.prisma.user.findFirst({
+      where: { role: 'superAdmin' },
+    });
+
+    return superAdmin;
+  }
+
   async findAndCount() {
     const users = await this.prisma.user.findMany();
     const totalCount = await this.prisma.user.count();
