@@ -23,41 +23,43 @@ export class SunService {
   }
 
   async getById(id: number) {
+    id = Number(id);
     return this.prisma.sun.findUnique({
       where: { id },
     });
   }
 
-  async updateSunForSuperAdmin(id: number, data: ISun) {
+  async updateSun(id: number, data: ISun, userId?: number) {
+    id = Number(id);
+    if (userId && !(await this.isUsersSun(userId, id))) {
+      throw new ForbiddenException(
+        'You are not allowed to perform this action',
+      );
+    }
+
     return this.prisma.sun.update({
       where: { id },
       data,
     });
   }
 
-  async removeSunForSuperAdmin(id: number) {
-    return this.prisma.menu.delete({
-      where: { id },
-    });
-  }
-
-  async updateSunForAdmin(id: number, data: ISun) {
-    if (this.isUsersSun(data.createrUser, id)) {
-      return this.prisma.sun.update({
-        where: { id },
-        data,
+  async removeSun(id: number, userId: number) {
+    id = Number(id);
+    if (userId) {
+      if (await this.isUsersSun(userId, id)) {
+        return this.prisma.sun.delete({
+          where: { id: id },
+        });
+      } else {
+        throw new ForbiddenException(
+          `You are not allowed to perform this action`,
+        );
+      }
+    } else {
+      return this.prisma.sun.delete({
+        where: { id: id },
       });
     }
-    throw new ForbiddenException('You are not allowed to perform this action');
-  }
-
-  async removeSunForAdmin(id: number, userId: number) {
-    if (this.isUsersSun(userId, id)) {
-      return this.prisma.menu.delete({
-        where: { id },
-      });
-    }
-    throw new ForbiddenException(`You are not allowed to perform this action`);
   }
 
   async isUsersSun(userId: number, sunId: number): Promise<boolean> {
@@ -65,7 +67,12 @@ export class SunService {
       where: { id: sunId },
       select: { createrUserId: true },
     });
-    return sun.createrUserId === userId;
+
+    if (sun && sun.createrUserId === userId) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   async getPage(page: number, limit: number) {

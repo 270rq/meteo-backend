@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/service/prisma/prisma.service';
 import { IMenu } from './interface/menu.interface';
 
@@ -25,6 +29,7 @@ export class MenuService {
   }
 
   async updateMenu(id: number, userId: number, dataToUpdate: IMenu) {
+    id = Number(id);
     if (userId) {
       if (await this.isUsersMenu(userId, id)) {
         return this.prisma.menu.update({
@@ -45,28 +50,34 @@ export class MenuService {
   }
 
   async removeMenu(id: number, userId: number) {
-    if (userId) {
-      if (await this.isUsersMenu(userId, id)) {
-        return this.prisma.menu.delete({
-          where: { id: id },
-        });
-      } else {
-        throw new ForbiddenException(
-          `You are not allowed to perform this action`,
-        );
-      }
-    } else {
+    id = Number(id);
+    if (!userId) {
+      throw new ForbiddenException(`User ID is required`);
+    }
+    console.log(userId);
+    if (await this.isUsersMenu(userId, id)) {
       return this.prisma.menu.delete({
         where: { id: id },
       });
+    } else {
+      throw new ForbiddenException(
+        `You are not allowed to perform this action`,
+      );
     }
   }
 
   async isUsersMenu(userId: number, menuId: number): Promise<boolean> {
+    userId = Number(userId);
+    menuId = Number(menuId);
     const menu = await this.prisma.menu.findUnique({
       where: { id: menuId },
       select: { createrUserId: true },
     });
+
+    if (!menu) {
+      throw new NotFoundException(`Menu with ID ${menuId} not found`);
+    }
+    console.log(menu.createrUserId === userId);
     return menu.createrUserId === userId;
   }
 
