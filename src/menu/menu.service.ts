@@ -24,44 +24,50 @@ export class MenuService {
     });
   }
 
-  async updateSunForSuperAdmin(id: number, data: IMenu) {
-    return this.prisma.menu.update({
-      where: { id },
-      data,
-    });
-  }
-
-  async removeSunForSuperAdmin(id: number) {
-    return this.prisma.menu.delete({
-      where: { id },
-    });
-  }
-
-  async updateSunForAdmin(id: number, data: IMenu) {
-    if (this.isUsersMenu(data.createrUserId, id)) {
+  async updateMenu(id: number, userId: number, dataToUpdate: IMenu) {
+    if (userId) {
+      if (await this.isUsersMenu(userId, id)) {
+        return this.prisma.menu.update({
+          where: { id: id },
+          data: dataToUpdate,
+        });
+      } else {
+        throw new ForbiddenException(
+          `You are not allowed to perform this action`,
+        );
+      }
+    } else {
       return this.prisma.menu.update({
-        where: { id },
-        data,
+        where: { id: id },
+        data: dataToUpdate,
       });
     }
-    throw new ForbiddenException('You are not allowed to perform this action');
   }
 
-  async removeSunForAdmin(id: number, userId: number) {
-    if (this.isUsersMenu(userId, id)) {
+  async removeMenu(id: number, userId: number) {
+    if (userId) {
+      if (await this.isUsersMenu(userId, id)) {
+        return this.prisma.menu.delete({
+          where: { id: id },
+        });
+      } else {
+        throw new ForbiddenException(
+          `You are not allowed to perform this action`,
+        );
+      }
+    } else {
       return this.prisma.menu.delete({
-        where: { id },
+        where: { id: id },
       });
     }
-    throw new ForbiddenException(`You are not allowed to perform this action`);
   }
 
-  async isUsersMenu(userId: number, sunId: number): Promise<boolean> {
-    const sun = await this.prisma.menu.findUnique({
-      where: { id: sunId },
+  async isUsersMenu(userId: number, menuId: number): Promise<boolean> {
+    const menu = await this.prisma.menu.findUnique({
+      where: { id: menuId },
       select: { createrUserId: true },
     });
-    return sun.createrUserId === userId;
+    return menu.createrUserId === userId;
   }
 
   async getPage(page: number, limit: number) {

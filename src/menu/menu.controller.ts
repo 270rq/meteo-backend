@@ -11,7 +11,6 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { MenuService } from './menu.service';
 import { MenuDto } from './dto/menu.dto';
-import { Roles } from 'decorators/roles-key';
 
 @Controller('menu')
 @ApiTags('menu')
@@ -33,31 +32,21 @@ export class MenuController {
     return this.menuService.createMenu(data);
   }
 
-  @Put('forsuperAdmin/:id')
-  @Roles('SuperAdmin')
-  async updateSunForSuperAdmin(@Param('id') id: number, @Body() data: MenuDto) {
-    return this.menuService.updateSunForSuperAdmin(id, data);
-  }
-
-  @Delete('forsuperAdmin/:id')
-  @Roles('SuperAdmin')
-  async removeSunForSuperAdmin(@Param('id') id: number) {
-    return this.menuService.removeSunForSuperAdmin(id);
-  }
-
-  @Put('forAdmin/:id')
-  @Roles('admin')
-  async updateSunForAdmin(@Param('id') id: number, @Body() data: MenuDto) {
-    return this.menuService.updateSunForAdmin(id, data);
-  }
-
-  @Delete('forAdmin/:id')
-  @Roles('admin')
-  async removeSunForAdmin(
+  @Put(':id')
+  async updateMenu(
     @Param('id') id: number,
-    @Query('userId') userId: number,
+    @Body() data: MenuDto,
+    @Body('createrUserId') createrUserId: number,
   ) {
-    return this.menuService.removeSunForAdmin(id, userId);
+    return this.menuService.updateMenu(id, createrUserId, data);
+  }
+
+  @Delete(':id')
+  async removeMenu(
+    @Param('id') id: number,
+    @Body('createrUserId') createrUserId: number,
+  ) {
+    return this.menuService.removeMenu(id, createrUserId);
   }
 
   @Get('page/:page')
