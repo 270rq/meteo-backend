@@ -10,6 +10,7 @@ export class RegionService {
   }
 
   async getById(id: number) {
+    id = Number(id);
     return this.prisma.region.findUnique({
       where: { id },
     });
