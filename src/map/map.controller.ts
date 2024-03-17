@@ -21,7 +21,7 @@ export class MapController {
     return this.mapService.getById(id);
   }
 
-  @Get('getAll')
+  @Post('getAll')
   async getAll() {
     return this.mapService.getAll();
   }

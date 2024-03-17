@@ -14,7 +14,7 @@ export class MapService {
   }
 
   async getAll() {
-    return this.prisma.map.findMany();
+    return this.prisma.map.findMany({ include: { flower: true } });
   }
 
   async getById(id: number) {

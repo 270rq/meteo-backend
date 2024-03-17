@@ -23,6 +23,7 @@ export class FamilyService {
   }
 
   async updateFamily(id: number, data: IFamily) {
+    id = Number(id);
     return this.prisma.family.update({
       where: { id },
       data,
@@ -30,6 +31,7 @@ export class FamilyService {
   }
 
   async removeFamily(id: number) {
+    id = Number(id);
     return this.prisma.family.delete({
       where: { id },
     });
