@@ -27,6 +27,15 @@ export class MenuController {
     return this.menuService.getAll();
   }
 
+  @Get(':cityId/:date')
+  async getWeatherForDay(
+    @Param('cityId') cityId: number,
+    @Param('date') date: string,
+  ) {
+    const weatherData = await this.menuService.getWeatherForDay(cityId, date);
+    return weatherData;
+  }
+
   @Post()
   async createMenu(@Body() data: MenuDto) {
     return this.menuService.createMenu(data);

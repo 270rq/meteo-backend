@@ -1,7 +1,8 @@
+import { ICord } from './cord-map.dto';
+
 export interface IMap {
   day: Date;
   flowerId: number;
-  x: number;
-  y: number;
+  cord: ICord[];
   lvl: number;
 }

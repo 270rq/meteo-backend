@@ -22,6 +22,18 @@ export class MenuService {
     });
   }
 
+  async getWeatherForDay(cityId: number, date: string) {
+    cityId = Number(cityId);
+    const data = await this.prisma.menu.findFirst({
+      where: {
+        cityId: cityId,
+        date: new Date(date),
+      },
+    });
+
+    return data;
+  }
+
   async getById(id: number) {
     return this.prisma.menu.findUnique({
       where: { id },

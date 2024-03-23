@@ -1,6 +1,7 @@
 import { IsDate, IsNotEmpty, IsNumber, Min, Max } from 'class-validator';
 import { IMap } from '../interface/map.interface';
 import { ApiProperty } from '@nestjs/swagger';
+import { ICord } from '../interface/cord-map.dto';
 
 export class MapDto implements IMap {
   @ApiProperty()
@@ -13,14 +14,7 @@ export class MapDto implements IMap {
   flowerId: number;
 
   @ApiProperty()
-  @IsNumber()
-  @Min(0)
-  x: number;
-
-  @ApiProperty()
-  @IsNumber()
-  @Min(0)
-  y: number;
+  cord: ICord[];
 
   @ApiProperty()
   @IsNumber()

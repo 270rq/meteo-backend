@@ -8,8 +8,15 @@ export class MapService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createMap(data: MapDto) {
-    return this.prisma.map.create({
-      data,
+    return this.prisma.map.createMany({
+      data: data.cord.map((coord) => ({
+        day: data.day,
+        flowerId: data.flowerId,
+        x: coord.x,
+        y: coord.y,
+        lvl: data.lvl,
+        createrUserId: data.createrUserId,
+      })),
     });
   }
 
