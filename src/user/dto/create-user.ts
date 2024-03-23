@@ -7,9 +7,9 @@ export class CreateUserDto implements IUser {
   @ApiProperty()
   @IsEmail()
   email: string;
-  @ApiProperty({ example: 1, description: 'id of flower' })
+  @ApiProperty({ example: 1 })
   @IsInt()
-  flowerId: number;
+  flowerId?: number;
   @ApiProperty()
   role: TUserRoles;
 }
