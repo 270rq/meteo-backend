@@ -6,7 +6,11 @@ import { ICord } from '../interface/cord-map.dto';
 export class MapDto implements IMap {
   @ApiProperty()
   @IsDate()
-  day: Date;
+  createdAt: Date;
+
+  @ApiProperty()
+  @IsDate()
+  date: Date;
 
   @ApiProperty()
   @IsNumber()

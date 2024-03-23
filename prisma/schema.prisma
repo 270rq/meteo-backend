@@ -61,6 +61,7 @@ model City {
 
 model Sun {
   id      Int      @id @default(autoincrement())
+  createdAt   DateTime    @default(now())
   date    DateTime @db.Date()
   city    City     @relation(fields: [cityId], references: [id])
   cityId  Int
@@ -88,6 +89,7 @@ model Flower {
 
 model Menu {
   id          Int         @id @default(autoincrement())
+  createdAt   DateTime    @default(now())
   date        DateTime
   city        City        @relation(fields: [cityId], references: [id])
   cityId      Int
@@ -104,7 +106,8 @@ model Menu {
 
 model Map {
   id       Int      @id @default(autoincrement())
-  day      DateTime
+  createdAt   DateTime    @default(now())
+  date        DateTime
   flower  Flower  @relation(fields: [flowerId], references: [id])
   flowerId Int
   x        Float

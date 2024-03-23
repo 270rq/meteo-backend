@@ -1,5 +1,5 @@
 export interface IManyMap {
-  day: Date;
+  date: Date;
   flowerId?: number;
   coords: coord[];
   lvl: number;

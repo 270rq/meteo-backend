@@ -5,6 +5,10 @@ import { ApiProperty } from '@nestjs/swagger';
 export class SunDto implements ISun {
   @ApiProperty()
   @IsDate()
+  createdAt: Date;
+
+  @ApiProperty()
+  @IsDate()
   date: Date;
 
   @ApiProperty()

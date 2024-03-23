@@ -10,7 +10,8 @@ export class MapService {
   async createMap(data: MapDto) {
     return this.prisma.map.createMany({
       data: data.cord.map((coord) => ({
-        day: data.day,
+        createdAt: data.createdAt,
+        date: data.date,
         flowerId: data.flowerId,
         x: coord.x,
         y: coord.y,
