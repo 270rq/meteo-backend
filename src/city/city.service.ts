@@ -6,7 +6,26 @@ export class CityService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getAll() {
-    return this.prisma.city.findMany();
+    const cities = await this.prisma.city.findMany();
+
+    const citiesWithRegion = await Promise.all(
+      cities.map(async (city) => {
+        const region = await this.prisma.region.findUnique({
+          where: {
+            id: city.regionId,
+          },
+        });
+
+        return {
+          id: city.id,
+          cityName: city.name,
+          regionId: region.id,
+          regionName: region.name,
+        };
+      }),
+    );
+
+    return citiesWithRegion;
   }
 
   async getById(id: number) {

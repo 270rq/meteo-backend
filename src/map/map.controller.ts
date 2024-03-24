@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { MapService } from './map.service';
@@ -39,5 +40,13 @@ export class MapController {
   @Delete(':id')
   async removeFlower(@Param('id') id: number) {
     return this.mapService.removeMap(id);
+  }
+
+  @Get('flower:id')
+  async geyByFlowerAndTime(
+    @Param('id') flowerId: number = 0,
+    @Query('date') date: Date | null,
+  ) {
+    return this.mapService.geyByFlowerAndTime(flowerId, date);
   }
 }

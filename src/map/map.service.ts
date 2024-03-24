@@ -43,4 +43,20 @@ export class MapService {
       where: { id },
     });
   }
+
+  async geyByFlowerAndTime(flowerId: number = 0, date: Date | null) {
+    let whereParam = {};
+
+    if (flowerId) {
+      whereParam = { flowerId: Number(flowerId) };
+    }
+    const data = new Date(date);
+    if (data.getTime()) {
+      whereParam = { ...whereParam, date: data };
+    }
+
+    return this.prisma.map.findMany({
+      where: whereParam,
+    });
+  }
 }
