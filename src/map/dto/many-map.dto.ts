@@ -5,7 +5,7 @@ export interface IManyMap {
   lvl: number;
 }
 
-interface coord {
+export interface coord {
   x: number;
   y: number;
 }
