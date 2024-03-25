@@ -27,17 +27,20 @@ export class MenuController {
     return this.menuService.getAll();
   }
 
-  @Get(':regionName/:cityName')
+  @Get(':regionName/:cityName/:date')
   async getWeatherForDay(
     @Param('regionName') regionName: string,
     @Param('cityName') cityName: string,
+    @Param('date') date: string,
   ) {
     const weatherData = await this.menuService.getWeatherForDay(
       regionName,
       cityName,
+      new Date(date),
     );
     return weatherData;
   }
+
   @Post()
   async createMenu(@Body() data: MenuDto) {
     return this.menuService.createMenu(data);

@@ -22,23 +22,22 @@ export class MenuService {
     });
   }
 
-  async getWeatherForDay(regionName: string, cityName: string) {
+  async getWeatherForDay(regionName: string, cityName: string, date: Date) {
     const city = await this.prisma.city.findFirst({
       where: {
         name: cityName,
-        region: {
-          name: regionName,
-        },
+        region: { name: regionName },
       },
     });
 
     if (!city) {
-      throw new Error('Указанный город не найден в данном регионе');
+      throw new Error(`City ${cityName} in region ${regionName} not found`);
     }
 
     const data = await this.prisma.menu.findMany({
       where: {
         cityId: city.id,
+        date: date.toISOString(),
       },
     });
 
