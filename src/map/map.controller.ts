@@ -42,10 +42,10 @@ export class MapController {
     return this.mapService.removeMap(id);
   }
 
-  @Get('flower:id')
+  @Get('flower/:id')
   async geyByFlowerAndTime(
-    @Param('id') flowerId: number = 0,
-    @Query('date') date: Date | null,
+    @Param('id') flowerId?: number,
+    @Query('date') date?: Date | null,
   ) {
     return this.mapService.geyByFlowerAndTime(flowerId, date);
   }

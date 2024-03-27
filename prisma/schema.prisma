@@ -113,8 +113,6 @@ model Map {
   x        Float
   y        Float
   lvl      Int
-  creater User     @relation(fields: [createrUserId], references: [id])
-  createrUserId Int
 }
 
 model User {
@@ -127,5 +125,4 @@ model User {
 
   sun Sun[] 
   menu Menu[]
-  map Map[]
 }

@@ -30,10 +30,6 @@ export class MenuService {
       },
     });
 
-    if (!city) {
-      throw new Error(`City ${cityName} in region ${regionName} not found`);
-    }
-
     const data = await this.prisma.menu.findMany({
       where: {
         cityId: city.id,

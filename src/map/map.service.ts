@@ -26,6 +26,7 @@ export class MapService {
   }
 
   async getById(id: number) {
+    id = Number(id);
     return this.prisma.map.findUnique({
       where: { id },
     });
