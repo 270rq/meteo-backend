@@ -11,6 +11,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { MapService } from './map.service';
 import { MapDto } from './dto/map.dto';
+import { config } from 'config/config';
 
 @Controller('map')
 @ApiTags('map')
@@ -20,6 +21,14 @@ export class MapController {
   @Get(':id')
   async getFlowerById(@Param('id') id: number) {
     return this.mapService.getById(id);
+  }
+
+  @Get('flower/:date')
+  async geyByFlowerAndTime(
+    @Param('id') flowerId?: number,
+    @Query('date') date?: Date | null,
+  ) {
+    return this.mapService.geyByFlowerAndTime(flowerId, date);
   }
 
   @Post('getAll')
@@ -42,11 +51,14 @@ export class MapController {
     return this.mapService.removeMap(id);
   }
 
-  @Get('flower/:id')
-  async geyByFlowerAndTime(
-    @Param('id') flowerId?: number,
-    @Query('date') date?: Date | null,
+  @Get('location/:lat-:long')
+  async getLocationData(
+    @Param('lat') lat: string,
+    @Param('long') long: string,
   ) {
-    return this.mapService.geyByFlowerAndTime(flowerId, date);
+    const response = await fetch(
+      `https://geocode-maps.yandex.ru/1.x/?apikey=${config.yandexApiKey}&geocode=${lat},${long}&lang=ru&format=json`,
+    );
+    return response.json();
   }
 }

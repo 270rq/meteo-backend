@@ -11,6 +11,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { MenuService } from './menu.service';
 import { MenuDto } from './dto/menu.dto';
+import { MenuFiveDaysDto } from './dto/menu-five-days.dto';
 
 @Controller('menu')
 @ApiTags('menu')
@@ -27,11 +28,20 @@ export class MenuController {
     return this.menuService.getAll();
   }
 
+  @Get('getWeather/:regionName/:cityName/:date')
+  async getWeather(
+    @Param('regionName') regionName: string,
+    @Param('cityName') cityName: string,
+    @Param('date') date: Date,
+  ) {
+    return this.menuService.getAllInformation(regionName, cityName, date);
+  }
+
   @Get(':regionName/:cityName/:date')
   async getWeatherForDay(
     @Param('regionName') regionName: string,
     @Param('cityName') cityName: string,
-    @Param('date') date: string,
+    @Param('date') date: Date,
   ) {
     const weatherData = await this.menuService.getWeatherForDay(
       regionName,
@@ -39,6 +49,24 @@ export class MenuController {
       new Date(date),
     );
     return weatherData;
+  }
+
+  @Get('five-days/:regionName/:cityName/:date')
+  async getWeatherForFiveDays(
+    @Param('regionName') regionName: string,
+    @Param('cityName') cityName: string,
+    @Param('date') date: Date,
+  ): Promise<MenuFiveDaysDto[]> {
+    return this.menuService.getWeatherForFiveDays(regionName, cityName, date);
+  }
+
+  @Get('hour/:regionName/:cityName/:date')
+  async getWeatherForHour(
+    @Param('regionName') regionName: string,
+    @Param('cityName') cityName: string,
+    @Param('date') date: Date,
+  ): Promise<MenuFiveDaysDto[]> {
+    return this.menuService.getHourlyWeather(regionName, cityName, date);
   }
 
   @Post()

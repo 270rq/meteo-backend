@@ -45,15 +45,28 @@ export class MapService {
     });
   }
 
-  async geyByFlowerAndTime(flowerId: number = 0, date: Date | null) {
+  async geyByFlowerAndTime(flowerId = 0, date: Date | null) {
     let whereParam = {};
 
     if (flowerId) {
       whereParam = { flowerId: Number(flowerId) };
     }
-    const data = new Date(date);
-    if (data.getTime()) {
-      whereParam = { ...whereParam, date: data };
+    date = new Date(date);
+    console.log(date.getTime());
+    if (date.getTime()) {
+      const startDate = new Date(date);
+      startDate.setTime(startDate.getTime() - 30 * 60 * 1000);
+      const endDate = new Date(date);
+      endDate.setTime(endDate.getTime() + 30 * 60 * 1000);
+      console.log(startDate, endDate);
+
+      whereParam = {
+        ...whereParam,
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      };
     }
 
     return this.prisma.map.findMany({

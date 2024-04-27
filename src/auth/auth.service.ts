@@ -48,7 +48,7 @@ export class AuthService {
     if (user) {
       throw new ConflictException('User already exists');
     }
-    const hash = await bcrypt.hash(signUpData.password, config.HashSaltRound); // шифровка
+    const hash = await bcrypt.hash(signUpData.password, +config.HashSaltRound); // шифровка
     signUpData.password = hash;
     const createdUser = await this.usersService.createUser(signUpData);
     console.log(createdUser);

@@ -69,6 +69,7 @@ model Sun {
   sunrise DateTime @db.Time()
   creater User     @relation(fields: [createrUserId], references: [id])
   createrUserId Int
+  @@unique([date, cityId])
 }
 
 model Family {
@@ -102,6 +103,7 @@ model Menu {
   weatherType WeatherType
   creater User     @relation(fields: [createrUserId], references: [id])
   createrUserId Int
+  @@unique([date, cityId])
 }
 
 model Map {
@@ -121,8 +123,18 @@ model User {
   hashPassword String
   flower       Flower? @relation(fields: [flowerId], references: [id])
   flowerId     Int?
+  nickname     String?
+  receive_notifications Boolean @default(false)
+  x            Float?
+  y            Float?
   role UserRoles
 
   sun Sun[] 
   menu Menu[]
+}
+
+model FeedBack {
+  id          Int     @id @default(autoincrement())
+  email String
+  message String
 }

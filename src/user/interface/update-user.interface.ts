@@ -1,6 +1,5 @@
-export interface IUser {
+export interface IUpdateUser {
   email: string;
-  password: string;
   flowerId?: number;
   nickname?: string;
   receive_notifications?: boolean;

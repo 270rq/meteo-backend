@@ -1,20 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsEmail, IsInt, IsNumber, IsString } from 'class-validator';
-import { IUser } from '../interface/create-user.interface';
-import { TUserRoles } from 'src/enum/user-role';
+import {
+  IsBoolean,
+  IsEmail,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
-export class CreateUserDto implements IUser {
+export class UpdateUserDto {
   @ApiProperty()
   @IsEmail()
   email: string;
   @ApiProperty({ example: 1 })
   @IsInt()
+  @IsOptional()
   flowerId?: number;
-  @ApiProperty()
-  role: TUserRoles;
-  @ApiProperty()
-  @IsString()
-  password: string;
   @ApiProperty({ example: 'SuperHuman' })
   @IsString()
   nickname?: string;

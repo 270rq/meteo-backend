@@ -1,33 +1,36 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/service/prisma/prisma.service';
-import { IUser } from './interface/create-user.interface';
 import { ISignUp } from 'src/auth/interface/signUp';
 import { UserRoles } from 'src/enum/user-role';
 import * as bcrypt from 'bcrypt';
 import { config } from 'config/config';
+import { IUpdateUser } from './interface/update-user.interface';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async createUser(user: ISignUp) {
+    const hash = await bcrypt.hash(user.password, Number(config.HashSaltRound));
     return this.prisma.user.create({
       data: {
         email: user.email,
-        hashPassword: user.password,
-        flowerId: user.flowerId,
+        hashPassword: hash,
         role: UserRoles.user,
       },
     });
   }
+
   async createAdmin(user: ISignUp) {
     const userDb = await this.findOneByEmail(user.email);
     if (userDb) {
       throw new ConflictException('User already exists');
     }
-    console.log(user);
     const hash = await bcrypt.hash(user.password, Number(config.HashSaltRound));
-    user.password = hash;
     return this.prisma.user.create({
       data: {
         email: user.email,
@@ -39,35 +42,48 @@ export class UserService {
   }
 
   async findSuperAdmin() {
-    const superAdmin = await this.prisma.user.findFirst({
+    return this.prisma.user.findFirst({
       where: { role: 'superAdmin' },
     });
-
-    return superAdmin;
   }
 
   async findAndCount() {
     const users = await this.prisma.user.findMany();
     const totalCount = await this.prisma.user.count();
-
-    const resListDto = {
-      rows: users,
-      count: totalCount,
-    };
-
-    return resListDto;
+    return { rows: users, count: totalCount };
   }
 
-  async findOneByEmail(mail: string) {
-    return this.prisma.user.findFirst({ where: { email: mail } });
+  async findOneByEmail(email: string) {
+    return this.prisma.user.findFirst({ where: { email } });
   }
+
   async findOneById(id: number) {
-    return this.prisma.user.findFirst({ where: { id } });
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
-  async updateUser(id: number, user: IUser) {
+
+  async updateUser(id: number, user: IUpdateUser) {
     return this.prisma.user.update({
-      where: { id: id },
-      data: user,
+      where: { id },
+      data: {
+        email: user.email,
+        flowerId: user.flowerId,
+        nickname: user.nickname,
+        receive_notifications: user.receive_notifications,
+      },
+    });
+  }
+
+  async deleteUser(id: number) {
+    return this.prisma.user.delete({ where: { id } });
+  }
+
+  async findUsersWithNotifications() {
+    return this.prisma.user.findMany({
+      where: { receive_notifications: true },
     });
   }
 }

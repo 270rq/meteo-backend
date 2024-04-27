@@ -5,15 +5,84 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/service/prisma/prisma.service';
 import { IMenu } from './interface/menu.interface';
+import { SunService } from 'src/sun/sun.service';
 
 @Injectable()
 export class MenuService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly sunService: SunService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   async createMenu(data: IMenu) {
-    return this.prisma.menu.create({
-      data,
+    const menu = await this.prisma.menu.findFirst({
+      where: { date: data.date, cityId: data.cityId },
     });
+    if (menu) {
+      return this.prisma.menu.update({
+        data: {
+          createdAt: data.createdAt,
+          date: data.date,
+          temperature: data.temperature,
+          humidity: data.humidity,
+          uv: data.uv,
+          windSpeed: data.windSpeed,
+          weatherType: data.weatherType,
+          windType: data.windType,
+          pressure: data.pressure,
+          createrUserId: data.createrUserId,
+          cityId: data.cityId,
+        },
+        where: { id: menu.id },
+      });
+    }
+    return this.prisma.menu.create({
+      data: {
+        createdAt: data.createdAt,
+        date: data.date,
+        temperature: data.temperature,
+        humidity: data.humidity,
+        uv: data.uv,
+        windSpeed: data.windSpeed,
+        weatherType: data.weatherType,
+        windType: data.windType,
+        pressure: data.pressure,
+        createrUserId: +data.createrUserId,
+        cityId: data.cityId,
+      },
+    });
+  }
+
+  async getAllInformation(regionName: string, cityName: string, date: Date) {
+    date = new Date(date);
+    const sunData = await this.sunService.getSunDataForCity(
+      cityName,
+      regionName,
+      date,
+    );
+
+    const menuData = await this.getWeatherForDay(regionName, cityName, date);
+
+    const weatherForFiveDays = await this.getWeatherForFiveDays(
+      regionName,
+      cityName,
+      date,
+    );
+
+    const weatherForFiveHours = await this.getHourlyWeather(
+      regionName,
+      cityName,
+      date,
+    );
+
+    return {
+      city: cityName,
+      region: regionName,
+      sunData: sunData,
+      menuData: menuData,
+      weatherForFiveDays: weatherForFiveDays,
+      weatherForFiveHours: weatherForFiveHours,
+    };
   }
 
   async getAll() {
@@ -29,15 +98,74 @@ export class MenuService {
         region: { name: regionName },
       },
     });
-
     const data = await this.prisma.menu.findMany({
       where: {
         cityId: city.id,
-        date: date.toISOString(),
+        date: {
+          gte: new Date(date.setHours(0, 0, 0)),
+          lte: new Date(date.setHours(23, 59, 0)),
+        },
       },
     });
 
-    return data;
+    return {
+      city: cityName,
+      region: regionName,
+      data,
+    };
+  }
+
+  async getWeatherForFiveDays(
+    regionName: string,
+    cityName: string,
+    startDate: Date,
+  ) {
+    const parsedDate = new Date(startDate);
+    parsedDate.setHours(0, 0, 0);
+    console.log(parsedDate);
+    const endDate = new Date(parsedDate);
+    endDate.setDate(endDate.getDate() + 5);
+
+    return this.prisma.menu.findMany({
+      where: {
+        city: {
+          name: cityName,
+          region: {
+            name: regionName,
+          },
+        },
+        date: {
+          gte: parsedDate,
+          lte: endDate,
+        },
+      },
+    });
+  }
+
+  async getHourlyWeather(regionName: string, cityName: string, date: Date) {
+    const city = await this.prisma.city.findFirst({
+      where: {
+        name: cityName,
+        region: { name: regionName },
+      },
+    });
+
+    if (!city) {
+      return null;
+    }
+    const dateParsed = new Date(date);
+    dateParsed.setHours(0, 0, 0);
+    const hourlyWeatherData = await this.prisma.menu.findMany({
+      where: {
+        cityId: city.id,
+        date: {
+          gte: dateParsed,
+          lte: new Date(dateParsed.getTime() + 24 * 60 * 60 * 1000),
+        },
+      },
+    });
+
+    return hourlyWeatherData;
   }
 
   async getById(id: number) {

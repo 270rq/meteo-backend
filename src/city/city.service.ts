@@ -7,7 +7,6 @@ export class CityService {
 
   async getAll() {
     const cities = await this.prisma.city.findMany();
-
     const citiesWithRegion = await Promise.all(
       cities.map(async (city) => {
         const region = await this.prisma.region.findUnique({
@@ -29,8 +28,10 @@ export class CityService {
   }
 
   async getById(id: number) {
+    id = Number(id);
     return this.prisma.city.findUnique({
       where: { id },
+      include: { region: true },
     });
   }
 }

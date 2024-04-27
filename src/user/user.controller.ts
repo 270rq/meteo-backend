@@ -1,8 +1,16 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
-import { IUser } from './interface/create-user.interface';
 import { SignUpDto } from 'src/auth/dto/signUp';
+import { UpdateUserDto } from './dto/update-user';
 
 @Controller('user')
 @ApiTags('user')
@@ -19,7 +27,7 @@ export class UserController {
     return this.userService.findAndCount();
   }
 
-  @Get(':mail')
+  @Get('mail/:mail')
   async findOneByEmail(@Param('mail') mail: string) {
     return this.userService.findOneByEmail(mail);
   }
@@ -30,7 +38,12 @@ export class UserController {
   }
 
   @Put(':id')
-  async updateUser(@Param('id') id: number, @Body() user: IUser) {
+  async updateUser(@Param('id') id: number, @Body() user: UpdateUserDto) {
     return this.userService.updateUser(id, user);
+  }
+
+  @Delete(':id')
+  async deleteUser(@Param('id') id: number) {
+    return this.userService.deleteUser(id);
   }
 }

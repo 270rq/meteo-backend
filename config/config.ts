@@ -3,6 +3,7 @@ import 'dotenv/config';
 export const config = Object.freeze({
   Port: process.env.PORT ?? 3000,
   HashSaltRound: process.env.HASH_SALT_ROUND,
+  yandexApiKey: process.env.YANDEX_API_KEY,
 });
 
 export const JwtConfig = {

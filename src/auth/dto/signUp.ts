@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsInt, Length } from 'class-validator';
+import { IsEmail, Length } from 'class-validator';
 import { ISignUp } from '../interface/signUp';
 
 export class SignUpDto implements ISignUp {
@@ -15,8 +15,4 @@ export class SignUpDto implements ISignUp {
   })
   @Length(6, 20, { message: 'Password must be between 6 and 20 characters' })
   password: string;
-
-  @ApiProperty({ example: 1, description: 'id of flower' })
-  @IsInt()
-  flowerId: number;
 }

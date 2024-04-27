@@ -17,8 +17,17 @@ import { ApiTags } from '@nestjs/swagger';
 export class SunController {
   constructor(private readonly sunService: SunService) {}
   @Get(':id')
-  async getFlowerById(@Param('id') id: number) {
+  async getById(@Param('id') id: number) {
     return this.sunService.getById(id);
+  }
+
+  @Get('regionName/:cityName/:date')
+  async getSunDataForCity(
+    @Param('regionName') regionName: string,
+    @Param('cityName') cityName: string,
+    @Param('date') date: Date,
+  ) {
+    return this.sunService.getSunDataForCity(regionName, cityName, date);
   }
 
   @Get()
