@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsEmail,
@@ -7,8 +7,9 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { CreateUserDto } from './create-user';
 
-export class UpdateUserDto {
+export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty()
   @IsEmail()
   email: string;

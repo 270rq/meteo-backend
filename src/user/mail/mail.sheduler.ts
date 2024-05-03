@@ -19,7 +19,8 @@ export class MailScheduler {
       for (const user of usersWithNotifications) {
         const { email } = user;
         const subject = 'Daily Update';
-        await this.mailService.sendMail(email, subject);
+        const message = 'This is your daily update.';
+        await this.mailService.sendMail(email, subject, message);
       }
     } catch (error) {
       console.error('Error sending daily emails:', error);

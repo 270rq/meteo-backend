@@ -73,6 +73,8 @@ export class UserService {
         flowerId: user.flowerId,
         nickname: user.nickname,
         receive_notifications: user.receive_notifications,
+        x: user.x,
+        y: user.y,
       },
     });
   }

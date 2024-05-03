@@ -4,5 +4,5 @@ export interface ISun {
   cityId: number;
   sunset: Date;
   sunrise: Date;
-  createrUser: number;
+  createrUserId: number;
 }

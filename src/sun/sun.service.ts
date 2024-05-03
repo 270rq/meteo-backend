@@ -33,7 +33,7 @@ export class SunService {
         cityId: data.cityId,
         sunset: data.sunset,
         sunrise: data.sunrise,
-        createrUserId: data.createrUser,
+        createrUserId: data.createrUserId,
       },
     });
   }

@@ -1,4 +1,6 @@
-export interface IUpdateUser {
+import { IUser } from './create-user.interface';
+
+export interface IUpdateUser extends Partial<IUser> {
   email: string;
   flowerId?: number;
   nickname?: string;

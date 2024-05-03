@@ -73,4 +73,46 @@ export class MapService {
       where: whereParam,
     });
   }
+
+  async getAllergenInfo(
+    userLocation: { lat: number; lon: number },
+    date: Date,
+  ) {
+    const analysisStartTime = new Date(date);
+    analysisStartTime.setHours(9, 0, 0, 0);
+    const analysisEndTime = new Date(date);
+    analysisEndTime.setHours(9, 0, 0, 0);
+    analysisEndTime.setDate(analysisEndTime.getDate() + 1);
+
+    const mapPoints = await this.prisma.map.findMany({
+      where: {
+        AND: [
+          {
+            x: { gte: userLocation.lat - 0.09, lte: userLocation.lat + 0.09 },
+            y: { gte: userLocation.lon - 0.09, lte: userLocation.lon + 0.09 },
+          },
+          {
+            date: {
+              gte: analysisStartTime,
+              lt: analysisEndTime,
+            },
+          },
+        ],
+      },
+    });
+
+    let allergenIncrease = 0;
+    for (const point of mapPoints) {
+      allergenIncrease += point.lvl;
+    }
+
+    let allergenInfo = '';
+    if (allergenIncrease > 0) {
+      allergenInfo = `Allergen levels have increased by ${allergenIncrease} units near your location.`;
+    } else {
+      allergenInfo = `Allergen levels have not increased near your location.`;
+    }
+
+    return allergenInfo;
+  }
 }

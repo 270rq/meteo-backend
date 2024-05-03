@@ -20,9 +20,23 @@ export class MailService {
     });
   }
 
-  async sendMail(to: string, subject: string) {
+  async sendMail(to: string, subject: string, message: string) {
     try {
-      const user = await this.userService.findOneByEmail(to);
+      await this.transporter.sendMail({
+        from: 'chuprova-katya@list.ru',
+        to,
+        subject,
+        text: message,
+      });
+      console.log('Email sent successfully');
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
+  }
+
+  async sendAllergenInfoToUserByEmail(userEmail: string) {
+    try {
+      const user = await this.userService.findOneByEmail(userEmail);
       if (!user) {
         throw new Error('User not found');
       }
@@ -67,15 +81,9 @@ export class MailService {
       message += `На ${currentDate.toLocaleString()} количество частиц аллергена в вашем районе: ${particleCountCurrent}\n`;
       message += `Тенденция: ${trend}\n`;
 
-      await this.transporter.sendMail({
-        from: 'chuprova-katya@list.ru',
-        to,
-        subject,
-        text: message,
-      });
-      console.log('Email sent successfully');
+      await this.sendMail(userEmail, 'Информация об аллергенах', message);
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.error('Error sending allergen information to user:', error);
     }
   }
 
