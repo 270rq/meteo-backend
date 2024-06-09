@@ -122,11 +122,16 @@ export class SunService {
     }
   }
 
-  async getPage(page: number, limit: number) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getPage(page: number, limit: number, where: any, order: any) {
     const skip = (page - 1) * limit;
-    const totalCount = await this.prisma.sun.count();
+    const totalCount = await this.prisma.sun.count({ where: where });
     const totalPages = Math.ceil(totalCount / limit);
+
     const rows = await this.prisma.sun.findMany({
+      include: { city: { include: { region: true } } },
+      where: where,
+      orderBy: order,
       skip: skip,
       take: limit,
     });

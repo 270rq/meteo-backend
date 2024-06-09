@@ -12,6 +12,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { MenuService } from './menu.service';
 import { MenuDto } from './dto/menu.dto';
 import { MenuFiveDaysDto } from './dto/menu-five-days.dto';
+import { ReqPageMenuDto } from './dto/req.menu.page.dto';
 
 @Controller('menu')
 @ApiTags('menu')
@@ -91,8 +92,12 @@ export class MenuController {
     return this.menuService.removeMenu(id, createrUserId);
   }
 
-  @Get('page/:page')
-  async getPage(@Param('page') page: number, @Query('limit') limit: number) {
-    return this.menuService.getPage(page, limit);
+  @Put('page/:page')
+  async getPage(
+    @Body() params: ReqPageMenuDto,
+    @Param('page') page: number,
+    @Query('limit') limit: number,
+  ) {
+    return this.menuService.getPage(page, limit, params.where, params.order);
   }
 }

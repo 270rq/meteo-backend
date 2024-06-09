@@ -227,11 +227,15 @@ export class MenuService {
     return menu.createrUserId === userId;
   }
 
-  async getPage(page: number, limit: number) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getPage(page: number, limit: number, where: any, order: any) {
     const skip = (page - 1) * limit;
-    const totalCount = await this.prisma.menu.count();
+    const totalCount = await this.prisma.menu.count({ where: where });
     const totalPages = Math.ceil(totalCount / limit);
     const rows = await this.prisma.menu.findMany({
+      include: { city: { include: { region: true } } },
+      where: where,
+      orderBy: order,
       skip: skip,
       take: limit,
     });

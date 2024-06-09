@@ -11,6 +11,7 @@ import {
 import { SunService } from './sun.service';
 import { SunDto } from './dto/sun.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { ReqPageSunDto } from './dto/req.sun.page.dto';
 
 @Controller('sun')
 @ApiTags('sun')
@@ -50,8 +51,12 @@ export class SunController {
     return this.sunService.removeSun(id, userId);
   }
 
-  @Get('page/:page')
-  async getPage(@Param('page') page: number, @Query('limit') limit: number) {
-    return this.sunService.getPage(page, limit);
+  @Put('page/:page')
+  async getPage(
+    @Body() params: ReqPageSunDto,
+    @Param('page') page: number,
+    @Query('limit') limit: number,
+  ) {
+    return this.sunService.getPage(page, limit, params.where, params.order);
   }
 }
