@@ -16,6 +16,7 @@ async function clearDatabase() {
   await prisma.menu.deleteMany();
   await prisma.sun.deleteMany();
   await prisma.map.deleteMany();
+  
 }
 
 function getIds(entity, where = {}) {
