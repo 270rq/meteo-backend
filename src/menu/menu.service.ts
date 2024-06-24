@@ -21,7 +21,6 @@ export class MenuService {
     if (menu) {
       return this.prisma.menu.update({
         data: {
-          createdAt: data.createdAt,
           date: data.date,
           temperature: data.temperature,
           humidity: data.humidity,
@@ -38,7 +37,6 @@ export class MenuService {
     }
     return this.prisma.menu.create({
       data: {
-        createdAt: data.createdAt,
         date: data.date,
         temperature: data.temperature,
         humidity: data.humidity,
