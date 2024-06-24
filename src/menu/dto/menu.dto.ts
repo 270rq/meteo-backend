@@ -1,14 +1,12 @@
 import { IsDate, IsNumber, IsNotEmpty, IsIn } from 'class-validator';
 import { IMenu } from '../interface/menu.interface';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class MenuDto implements IMenu {
   @ApiProperty()
   @IsDate()
-  createdAt: Date;
-
-  @ApiProperty()
-  @IsDate()
+  @Type(() => Date)
   date: Date;
 
   @ApiProperty()

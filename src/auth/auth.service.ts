@@ -26,7 +26,6 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-
     const isMatch = await bcrypt.compare(enteredPassword, user.hashPassword);
     if (!isMatch) {
       throw new UnauthorizedException('Invalid password');
@@ -48,11 +47,7 @@ export class AuthService {
     if (user) {
       throw new ConflictException('User already exists');
     }
-    const hash = await bcrypt.hash(signUpData.password, +config.HashSaltRound); // шифровка
-    signUpData.password = hash;
     const createdUser = await this.usersService.createUser(signUpData);
-    console.log(createdUser);
-    console.log(signUpData);
     const payload = {
       email: createdUser.email,
       id: createdUser.id,
