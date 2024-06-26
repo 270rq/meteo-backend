@@ -31,7 +31,7 @@ export class MapController {
     return this.mapService.geyByFlowerAndTime(flowerId, date);
   }
 
-  @Post('getAll')
+  @Get('getAll')
   async getAll() {
     return this.mapService.getAll();
   }

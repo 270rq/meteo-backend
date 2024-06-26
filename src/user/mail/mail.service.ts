@@ -45,6 +45,8 @@ export class MailService {
       const currentDateData = await this.mapService.geyByFlowerAndTime(
         user.flowerId,
         currentDate,
+        { lat: user.x, lon: user.y },
+        true,
       );
       let particleCountCurrent = 0;
       if (currentDateData.length > 0) {
@@ -59,6 +61,8 @@ export class MailService {
       const prevDateData = await this.mapService.geyByFlowerAndTime(
         user.flowerId,
         prevDate,
+        { lat: user.x, lon: user.y },
+        true,
       );
       let particleCountPrev = 0;
       if (prevDateData.length > 0) {

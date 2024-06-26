@@ -10,13 +10,11 @@ export class MapService {
   async createMap(data: MapDto) {
     return this.prisma.map.createMany({
       data: data.cord.map((coord) => ({
-        createdAt: data.createdAt,
         date: data.date,
         flowerId: data.flowerId,
         x: coord.x,
         y: coord.y,
         lvl: data.lvl,
-        createrUserId: data.createrUserId,
       })),
     });
   }
@@ -45,11 +43,23 @@ export class MapService {
     });
   }
 
-  async geyByFlowerAndTime(flowerId = 0, date: Date | null) {
+  async geyByFlowerAndTime(
+    flowerId = 0,
+    date: Date | null,
+    userLocation: { lat: number; lon: number } = { lat: 0, lon: 0 },
+    check = false,
+  ) {
     let whereParam = {};
 
     if (flowerId) {
       whereParam = { flowerId: Number(flowerId) };
+    }
+    if (check) {
+      whereParam = {
+        ...whereParam,
+        x: { gte: userLocation.lat - 0.09, lte: userLocation.lat + 0.09 },
+        y: { gte: userLocation.lon - 0.09, lte: userLocation.lon + 0.09 },
+      };
     }
     date = new Date(date);
     console.log(date.getTime());
@@ -71,48 +81,7 @@ export class MapService {
 
     return this.prisma.map.findMany({
       where: whereParam,
+      include: { flower: true },
     });
-  }
-
-  async getAllergenInfo(
-    userLocation: { lat: number; lon: number },
-    date: Date,
-  ) {
-    const analysisStartTime = new Date(date);
-    analysisStartTime.setHours(9, 0, 0, 0);
-    const analysisEndTime = new Date(date);
-    analysisEndTime.setHours(9, 0, 0, 0);
-    analysisEndTime.setDate(analysisEndTime.getDate() + 1);
-
-    const mapPoints = await this.prisma.map.findMany({
-      where: {
-        AND: [
-          {
-            x: { gte: userLocation.lat - 0.09, lte: userLocation.lat + 0.09 },
-            y: { gte: userLocation.lon - 0.09, lte: userLocation.lon + 0.09 },
-          },
-          {
-            date: {
-              gte: analysisStartTime,
-              lt: analysisEndTime,
-            },
-          },
-        ],
-      },
-    });
-
-    let allergenIncrease = 0;
-    for (const point of mapPoints) {
-      allergenIncrease += point.lvl;
-    }
-
-    let allergenInfo = '';
-    if (allergenIncrease > 0) {
-      allergenInfo = `Allergen levels have increased by ${allergenIncrease} units near your location.`;
-    } else {
-      allergenInfo = `Allergen levels have not increased near your location.`;
-    }
-
-    return allergenInfo;
   }
 }

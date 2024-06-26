@@ -19,14 +19,17 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   flowerId?: number;
   @ApiProperty({ example: 'SuperHuman' })
   @IsString()
+  @IsOptional()
   nickname?: string;
   @ApiProperty({ example: false })
   @IsBoolean()
   receive_notifications?: boolean;
   @ApiProperty({ example: 57.89 })
   @IsNumber()
+  @IsOptional()
   x?: number;
   @ApiProperty({ example: 57.909 })
   @IsNumber()
+  @IsOptional()
   y?: number;
 }

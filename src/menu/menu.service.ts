@@ -194,14 +194,14 @@ export class MenuService {
   }
 
   async removeMenu(id: number, userId: number) {
-    id = Number(id);
+    id;
     if (!userId) {
       throw new ForbiddenException(`User ID is required`);
     }
     console.log(userId);
     if (await this.isUsersMenu(userId, id)) {
       return this.prisma.menu.delete({
-        where: { id: id },
+        where: { id: +id },
       });
     } else {
       throw new ForbiddenException(
@@ -225,7 +225,6 @@ export class MenuService {
     return menu.createrUserId === userId;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getPage(page: number, limit: number, where: any, order: any) {
     const skip = (page - 1) * limit;
     const totalCount = await this.prisma.menu.count({ where: where });

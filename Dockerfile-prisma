@@ -1,0 +1,22 @@
+# Используем официальный образ Node.js
+FROM node:20
+
+# Установка рабочей директории в /app
+WORKDIR /app
+
+# Копирование зависимостей
+COPY package.json ./
+COPY yarn.lock ./
+
+# Установка зависимостей с использованием Yarn
+RUN yarn install --frozen-lockfile
+
+# Копирование остальных файлов проекта
+COPY . .
+
+# Установка wait-for-it
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
+
+# Команда для запуска миграций
+CMD ["/wait-for-it.sh", "db:3306", "--", "yarn", "prisma", "migrate", "deploy"]

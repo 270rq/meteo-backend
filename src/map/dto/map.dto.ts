@@ -1,15 +1,17 @@
-import { IsDate, IsNotEmpty, IsNumber, Min, Max } from 'class-validator';
+import {
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  Min,
+  Max,
+  IsArray,
+} from 'class-validator';
 import { IMap } from '../interface/map.interface';
 import { ApiProperty } from '@nestjs/swagger';
 import { ICord } from '../interface/cord-map.dto';
 import { Type } from 'class-transformer';
 
 export class MapDto implements IMap {
-  @ApiProperty()
-  @Type(() => Date)
-  @IsDate()
-  createdAt: Date;
-
   @ApiProperty()
   @Type(() => Date)
   @IsDate()
@@ -21,6 +23,7 @@ export class MapDto implements IMap {
   flowerId: number;
 
   @ApiProperty()
+  @IsArray()
   cord: ICord[];
 
   @ApiProperty()
@@ -28,8 +31,4 @@ export class MapDto implements IMap {
   @Min(1)
   @Max(100)
   lvl: number;
-
-  @ApiProperty()
-  @IsNumber()
-  createrUserId: number;
 }
